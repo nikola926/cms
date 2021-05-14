@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,12 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
     Route::get('profile', [AuthController::class, 'profile'])->middleware('auth:api');
 
+});
+
+Route::get('/roles', [PermissionController::class, 'Permission']);
+
+Route::group(['middleware' => 'role:developer'], function() {
+    Route::get('/dashboard', function() {
+        return 'Welcome Developer';
+    });
 });
