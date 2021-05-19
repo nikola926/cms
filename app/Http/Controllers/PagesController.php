@@ -58,7 +58,7 @@ class PagesController extends Controller
             'slug' => $slug,
             'content' => $content,
             'featured_image' => $image_id,
-            'author' => auth()->user()->id,
+            'author' => Auth::user()->id,
             'status' => 0,
         ]);
 
@@ -139,7 +139,7 @@ class PagesController extends Controller
             'slug' => $slug,
             'content' => $content,
             'featured_image' => $image_id,
-            'author' => 1,
+            'author' => Auth::user()->id,
             'status' => 0,
         ]);
 
