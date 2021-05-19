@@ -14,7 +14,7 @@ class PagesController extends Controller
 
     public function index()
     {
-        $pages = Pages::all();
+        $pages = Pages::with('featured_image')->get();
         return $pages;
     }
 
@@ -73,15 +73,14 @@ class PagesController extends Controller
 
     public function show($id){
         $page = Pages::find($id);
-        $featured_image = Media::find($page->featured_image);
-        return response()->json(['Pages' => $page, 'Media' => $featured_image]);
+        return response()->json($page);
 
     }
 
     public function edit($id) {
-        $page = Pages::find($id);
-        $featured_image = Media::find($page->featured_image);
-        return response()->json(['Pages' => $page, 'Media' => $featured_image]);
+        $page = Pages::find($id)->with('featured_image')->get();
+
+        return response()->json(['Pages' => $page]);
     }
 
     public function update(Request $request, $id) {

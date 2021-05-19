@@ -54,7 +54,7 @@ Route::group([
     Route::get(':{id}', [PagesController::class, 'show']);
     Route::get('edit/{id}', [PagesController::class, 'edit']);
     Route::post('edit/{id}', [PagesController::class, 'update']);
-    Route::delete('{id}', [PagesController::class, 'softDelete']);
+    Route::delete('/:{id}', [PagesController::class, 'softDelete']);
     Route::get('/trash', [PagesController::class, 'trash']);
     Route::post('/trash/restore/{id}', [PagesController::class, 'restore']);
     Route::delete('/trash/delete/{id}', [PagesController::class, 'delete']);
