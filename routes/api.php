@@ -34,7 +34,6 @@ Route::group([
 
 });
 
-Route::get('/roles', [PermissionController::class, 'Permission']);
 
 Route::group(['middleware' => 'role:developer'], function() {
     Route::get('/dashboard', function() {
@@ -42,21 +41,16 @@ Route::group(['middleware' => 'role:developer'], function() {
     });
 });
 
-Route::group([
 
+Route::group([
     'middleware' => 'api',
     'prefix' => 'pages'
-
 ], function ($router) {
 
-    Route::get('/', [PagesController::class, 'index']);
-    Route::post('/', [PagesController::class, 'store']);
-    Route::get(':{id}', [PagesController::class, 'show']);
-    Route::get('edit/{id}', [PagesController::class, 'edit']);
-    Route::post('edit/{id}', [PagesController::class, 'update']);
-    Route::delete('/:{id}', [PagesController::class, 'softDelete']);
     Route::get('/trash', [PagesController::class, 'trash']);
-    Route::post('/trash/restore/{id}', [PagesController::class, 'restore']);
-    Route::delete('/trash/delete/{id}', [PagesController::class, 'delete']);
+    Route::post('/trash/{page}', [PagesController::class, 'restore']);
+    Route::delete('/trash/{page}', [PagesController::class, 'delete']);
 
 });
+Route::resource('pages', PagesController::class);
+

@@ -14,7 +14,7 @@ class PagesController extends Controller
 
     public function index()
     {
-        $pages = Pages::with('featured_image')->get();
+        $pages = Pages::with('featured_image', 'status', 'author')->get();
         return $pages;
     }
 
@@ -28,6 +28,7 @@ class PagesController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->page_content;
         $featured_image = $request->file('featured_image');
+
 
         if($featured_image){
             $name_gen = hexdec(uniqid());
@@ -57,9 +58,9 @@ class PagesController extends Controller
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
-            'featured_image' => $image_id,
-            'author' => Auth::user()->id,
-            'status' => 0,
+            'featured_image_id' => $image_id,
+            'author_id' => Auth::user()->id,
+            'status_id' => 1,
         ]);
 
         if($page){
@@ -71,25 +72,26 @@ class PagesController extends Controller
 
     }
 
-    public function show($id){
-        $page = Pages::find($id);
-        return response()->json($page);
+    public function show($page){
+        $pages = Pages::where('id', $page)->with('featured_image', 'status', 'author')->get();
+        return response()->json($pages);
 
     }
 
-    public function edit($id) {
-        $page = Pages::find($id)->with('featured_image')->get();
+    public function edit($page) {
+        $pages = Pages::where('id', $page)->with('featured_image', 'status', 'author')->get();
 
-        return response()->json(['Pages' => $page]);
+        return response()->json(['Pages' => $pages]);
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $page) {
 
         $title = $request->title;
         $slug = Str::of($title)->slug('-');
         $get_content = $request->page_content;
         $featured_image = $request->file('featured_image');
         $old_image = $request->old_image;
+        $status_id = $request->status_id;
 
         if($featured_image){
             if($old_image != 'null') {
@@ -133,24 +135,24 @@ class PagesController extends Controller
             $content = null;
         }
 
-        $page = Pages::find($id)->update([
+        $pages = Pages::find($page)->update([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
-            'featured_image' => $image_id,
-            'author' => Auth::user()->id,
-            'status' => 0,
+            'featured_image_id' => $image_id,
+            'author_id' => Auth::user()->id,
+            'status_id' => $status_id,
         ]);
 
-        if($page){
+        if($pages){
             return response()->json(['message' => 'Page updated successfully']);
         }else{
             return response()->json(['status' => false]);
         }
     }
 
-    public function softDelete($id) {
-        $page = Pages::find($id)->delete();
+    public function destroy($page) {
+        $page = Pages::find($page)->delete();
         return response()->json(['message' => 'Page successfully moved to trash']);
     }
 
@@ -159,13 +161,13 @@ class PagesController extends Controller
         return response()->json($pages);
     }
 
-    public function restore($id){
-        $pages = Pages::withTrashed()->find($id)->restore();
+    public function restore($page){
+        $pages = Pages::withTrashed()->find($page)->restore();
         return response()->json(['message' => 'Page restored successfully']);
     }
 
-    public function delete($id) {
-        $pages = Pages::withTrashed()->find($id)->forceDelete();
+    public function delete($page) {
+        $pages = Pages::withTrashed()->find($page)->forceDelete();
         return response()->json(['message' => 'Page deleted successfully']);
     }
 

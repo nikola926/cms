@@ -18,11 +18,12 @@ class CreatePagesTable extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('content')->nullable();
-            $table->integer('featured_image')->nullable();
-            $table->integer('author');
-            $table->integer('status');
+            $table->foreignId('featured_image_id')->nullable()->constrained('media');
+            $table->integer('author_id');
+            $table->foreignId('status_id')->constrained('statuses');
             $table->timestamps();
             $table->softDeletes();
+
 
         });
     }
