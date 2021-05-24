@@ -41,7 +41,7 @@ Route::group(['middleware' => 'role:developer'], function() {
     });
 });
 
-
+//PAGE ROUTS
 Route::group([
     'middleware' => 'api',
     'prefix' => 'pages'
@@ -53,4 +53,9 @@ Route::group([
 
 });
 Route::resource('pages', PagesController::class);
+
+
+//POSTS ROUT
+Route::resource('posts', \App\Http\Controllers\PostController::class);
+
 
