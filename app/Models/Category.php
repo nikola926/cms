@@ -12,9 +12,10 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
+        'parent_id',
     ];
 
     public function posts(){
-        return $this->belongsToMany(Posts::class, 'categories_posts', 'post_id','category_id');
+        return $this->belongsToMany(Post::class, 'categories_posts', 'post_id','category_id');
     }
 }

@@ -22,10 +22,11 @@ class CategoryFactory extends Factory
      */
     public function definition()
     {
-        $name = $this->faker->text(20);
+        $name = $this->faker->city;
         return [
             'name' => $name,
             'slug' => Str::slug($name),
         ];
+
     }
 }

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use App\Models\Status;
-use App\Models\Pages;
+use App\Models\Page;
 
 class PageSeeder extends Seeder
 {
@@ -31,7 +31,7 @@ class PageSeeder extends Seeder
 
 
 
-        $pages = new Pages();
+        $pages = new Page();
         $pages->title = 'About';
         $pages->slug = 'about';
         $pages->content = 'Test content';
@@ -40,7 +40,7 @@ class PageSeeder extends Seeder
         $pages->status_id = $draft_status->id;
         $pages->save();
 
-        $pages = new Pages();
+        $pages = new Page();
         $pages->title = 'Home';
         $pages->slug = 'home';
         $pages->content = 'Test content';

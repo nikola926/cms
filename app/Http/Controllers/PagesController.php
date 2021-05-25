@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Pages;
+use App\Models\Page;
 use App\Models\Media;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class PagesController extends Controller
 
     public function index()
     {
-        $pages = Pages::with('featured_image', 'status', 'author')->get();
+        $pages = Page::with('featured_image', 'status', 'author')->get();
         return $pages;
     }
 
@@ -54,7 +54,7 @@ class PagesController extends Controller
             $content = null;
         }
 
-        $page = Pages::create([
+        $page = Page::create([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
@@ -73,15 +73,15 @@ class PagesController extends Controller
     }
 
     public function show($page){
-        $pages = Pages::where('id', $page)->with('featured_image', 'status', 'author')->get();
+        $pages = Page::where('id', $page)->with('featured_image', 'status', 'author')->get();
         return response()->json($pages);
 
     }
 
     public function edit($page) {
-        $pages = Pages::where('id', $page)->with('featured_image', 'status', 'author')->get();
+        $pages = Page::where('id', $page)->with('featured_image', 'status', 'author')->get();
 
-        return response()->json(['Pages' => $pages]);
+        return response()->json(['Page' => $pages]);
     }
 
     public function update(Request $request, $page) {
@@ -135,7 +135,7 @@ class PagesController extends Controller
             $content = null;
         }
 
-        $pages = Pages::find($page)->update([
+        $pages = Page::find($page)->update([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
@@ -152,22 +152,22 @@ class PagesController extends Controller
     }
 
     public function destroy($page) {
-        $page = Pages::find($page)->delete();
+        $page = Page::find($page)->delete();
         return response()->json(['message' => 'Page successfully moved to trash']);
     }
 
     public function trash() {
-        $pages = Pages::onlyTrashed()->get();
+        $pages = Page::onlyTrashed()->get();
         return response()->json($pages);
     }
 
     public function restore($page){
-        $pages = Pages::withTrashed()->find($page)->restore();
+        $pages = Page::withTrashed()->find($page)->restore();
         return response()->json(['message' => 'Page restored successfully']);
     }
 
     public function delete($page) {
-        $pages = Pages::withTrashed()->find($page)->forceDelete();
+        $pages = Page::withTrashed()->find($page)->forceDelete();
         return response()->json(['message' => 'Page deleted successfully']);
     }
 

@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +43,7 @@ Route::group(['middleware' => 'role:developer'], function() {
     });
 });
 
-//PAGE ROUTS
+//PAGE ROUTE
 Route::group([
     'middleware' => 'api',
     'prefix' => 'pages'
@@ -55,7 +57,20 @@ Route::group([
 Route::resource('pages', PagesController::class);
 
 
-//POSTS ROUT
-Route::resource('posts', \App\Http\Controllers\PostController::class);
+//POSTS ROUTE
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'posts'
+], function ($router) {
+
+    Route::get('/trash', [PostController::class, 'trash']);
+    Route::post('/trash/{page}', [PostController::class, 'restore']);
+    Route::delete('/trash/{page}', [PostController::class, 'delete']);
+
+});
+Route::resource('posts', PostController::class);
+
+//CATEGORY ROUTE
+Route::resource('category', CategoryController::class);
 
 

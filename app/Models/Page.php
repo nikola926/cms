@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Media;
+use App\Models\Status;
 
-class Posts extends Model
+class Page extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -28,9 +30,5 @@ class Posts extends Model
     }
     public function author(){
         return $this->hasOne(User::class, 'id', 'author_id');
-    }
-
-    public function category(){
-        return $this->belongsToMany(Category::class, 'categories_posts', 'post_id', 'category_id' );
     }
 }
