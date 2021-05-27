@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\WidgetController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,3 +57,5 @@ Route::group([
 Route::resource('pages', PagesController::class);
 
 Route::resource('widgets', WidgetController::class);
+
+Route::resource('menu', MenuController::class);
