@@ -21,38 +21,38 @@ class WidgetController extends Controller
         $name = $request->name;
         $content = $request->widget_content;
 
-        $widgets = Widget::create([
+        $widget = Widget::create([
             'name' => $name,
             'content' => $content,
         ]);
 
-        if($widgets){
-            return response()->json($widgets);
+        if($widget){
+            return response()->json($widget);
         }else{
             return response()->json(['status' => false]);
         }
     }
 
-    public function update(Request $request, $widget) {
+    public function update(Request $request, int $widget_id) {
 
         $name = $request->name;
         $content = $request->widget_content;
 
-        $widgets = Widget::find($widget)->update([
+        $widget = Widget::findOrFail($widget_id)->update([
             'name' => $name,
             'content' => $content,
         ]);
 
-        if($widgets){
-            return response()->json($widgets);
+        if($widget){
+            return response()->json($widget);
         }else{
             return response()->json(['status' => false]);
         }
 
     }
 
-    public function destroy($widget) {
-        $widgets = Widget::find($widget)->forceDelete();
+    public function destroy(int $widget_id) {
+        Widget::find($widget_id)->forceDelete();
         return response()->json(['message' => 'Widget successfully moved to trash']);
     }
 }

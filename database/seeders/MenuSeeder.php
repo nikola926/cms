@@ -21,17 +21,6 @@ class MenuSeeder extends Seeder
     {
         Menu::factory()->count(3)->create();
 
-//        for ($i=0; $i < 5; $i++) {
-//            DB::table('menu_items')->insert(
-//                [
-//                    'menu_id' => 1 ,
-//                    'parent_id' => null,
-//                    'name' => $this->faker->title(10),
-//                    'slug' => $this->faker->title(10),
-//                    'type' => 'page' ,
-//                ]
-//            );
-//        }
 
         MenuItem::factory()->count(10)->create();
     }

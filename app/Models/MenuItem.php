@@ -17,7 +17,7 @@ class MenuItem extends Model
         'type',
     ];
 
-    public function child_item(){
+    public function child_items(){
         return $this->hasMany(MenuItem::class, 'parent_id', 'id');
     }
 }

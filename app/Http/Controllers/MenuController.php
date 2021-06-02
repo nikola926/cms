@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class MenuController extends Controller
 {
     public function index() {
-        $menus = Menu::with('menu_item')->get();
+        $menus = Menu::with('menu_items')->get();
 
         return response()->json($menus);
     }
@@ -18,38 +18,38 @@ class MenuController extends Controller
             'name' => 'required|unique:menu|max:255',
         ]);
 
-        $menus = Menu::create([
+        $menu = Menu::create([
             'name' => $request->name,
         ]);
 
-        if($menus){
-            return response()->json($menus);
+        if($menu){
+            return response()->json($menu);
         }else{
             return response()->json(['status' => false]);
         }
     }
 
-    public function update(Request $request, $menu){
-        $menus = Menu::find($menu)->update([
+    public function update(Request $request,int $menu_id){
+        $menu = Menu::find($menu_id)->update([
             'name' => $request->name,
         ]);
 
-        if($menus){
-            return response()->json($menus);
+        if($menu){
+            return response()->json($menu);
         }else{
             return response()->json(['status' => false]);
         }
     }
 
-    public function destroy($menu) {
-        $menus = Pages::find($menu)->forceDelete();
+    public function destroy(int $menu_id) {
+        Pages::findOrFail($menu_id)->forceDelete();
         return response()->json(['message' => 'Page successfully moved to trash']);
     }
 
-    public function show($menu) {
-        $menus = Menu::where('id', $menu)->with('menu_item')->get();
+    public function show(int $menu_id) {
+        $menu = Menu::where('id', $menu_id)->with('menu_items')->get();
 
-        return response()->json($menus);
+        return response()->json($menu);
     }
 
 }

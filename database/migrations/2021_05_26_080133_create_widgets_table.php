@@ -17,6 +17,7 @@ class CreateWidgetsTable extends Migration
             $table->id();
             $table->string('name');
             $table->text('content');
+            $table->string('type');
             $table->timestamps();
         });
     }
