@@ -7,6 +7,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\WidgetController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,23 +21,18 @@ use App\Http\Controllers\CategoryController;
 |
 */
 
-
-
 Route::group([
 
     'middleware' => 'api',
     'prefix' => 'auth'
 
 ], function ($router) {
-
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
     Route::get('profile', [AuthController::class, 'profile'])->middleware('auth:api');
-
 });
-
 
 Route::group(['middleware' => 'role:developer'], function() {
     Route::get('/dashboard', function() {
@@ -56,7 +53,6 @@ Route::group([
 });
 Route::resource('pages', PagesController::class);
 
-
 //POSTS ROUTE
 Route::group([
     'middleware' => 'api',
@@ -72,5 +68,6 @@ Route::resource('posts', PostController::class);
 
 //CATEGORY ROUTE
 Route::resource('category', CategoryController::class);
-
+Route::resource('widgets', WidgetController::class);
+Route::resource('menu', MenuController::class);
 
