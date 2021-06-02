@@ -29,20 +29,7 @@ class PostController extends Controller
 
 
         if($featured_image){
-            $name_gen = hexdec(uniqid());
-            $image_ext = strtolower($featured_image->getClientOriginalExtension());
-            $img_slug = $name_gen.'.'.$image_ext;
-            $up_location = 'image/';
-            $last_image = $up_location.$img_slug;
-            $featured_image->move($up_location,$img_slug);
-
-            $image = Media::create([
-                'alt' => $featured_image->getClientOriginalName(),
-                'slug' => $last_image,
-                'type' => $image_ext,
-            ]);
-
-            $image_id = $image->id;
+            $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
         } else{
             $image_id = null;
         }
@@ -69,19 +56,19 @@ class PostController extends Controller
 
     }
 
-    public function show($post){
-        $posts = Post::where('id', $post)->with('category','author', 'featured_image', 'status')->get();
-        return response()->json($posts);
+    public function show(int $post_id){
+        $post = Post::where('id', $post_id)->with('category','author', 'featured_image', 'status')->get();
+        return response()->json($post);
 
     }
 
-    public function edit($post) {
-        $pages = Post::where('id', $post)->with('category','author', 'featured_image', 'status')->get();
+    public function edit(int $post_id) {
+        $post = Post::where('id', $post_id)->with('category','author', 'featured_image', 'status')->get();
 
-        return response()->json(['Page' => $pages]);
+        return response()->json($post);
     }
 
-    public function update(Request $request, $post) {
+    public function update(Request $request, int $post_id) {
 
         $title = $request->title;
         $slug = Str::of($title)->slug('-');
@@ -91,48 +78,20 @@ class PostController extends Controller
         $status_id = $request->status_id;
 
         if($featured_image){
-            if($old_image != 'null') {
-                $name_gen = hexdec(uniqid());
-                $image_ext = strtolower($featured_image->getClientOriginalExtension());
-                $img_slug = $name_gen . '.' . $image_ext;
-                $up_location = 'image/';
-                $last_image = $up_location . $img_slug;
-                $featured_image->move($up_location, $img_slug);
-
-                $image = Media::find($old_image)->update([
-                    'alt' => $featured_image->getClientOriginalName(),
-                    'slug' => $last_image,
-                    'type' => $image_ext,
-                ]);
-
-                $image_id = $old_image;
-            }
-            else{
-                $name_gen = hexdec(uniqid());
-                $image_ext = strtolower($featured_image->getClientOriginalExtension());
-                $img_slug = $name_gen.'.'.$image_ext;
-                $up_location = 'image/';
-                $last_image = $up_location.$img_slug;
-                $featured_image->move($up_location,$img_slug);
-
-                $image = Media::create([
-                    'alt' => $featured_image->getClientOriginalName(),
-                    'slug' => $last_image,
-                    'type' => $image_ext,
-                ]);
-
-                $image_id = $image->id;
-            }
-        } else{
+            $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
+        } elseif ($old_image != 'null') {
             $image_id = $old_image;
+        } else {
+            $image_id = null;
         }
+
         if($get_content){
             $content = $get_content;
         }else {
             $content = null;
         }
 
-        $posts = Post::find($post)->update([
+        $post = Post::findOrFail($post_id)->update([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
@@ -141,30 +100,30 @@ class PostController extends Controller
             'status_id' => $status_id,
         ]);
 
-        if($posts){
-            return response()->json(['message' => 'Page updated successfully']);
+        if($post){
+            return response()->json(['message' => 'Post updated successfully']);
         }else{
             return response()->json(['status' => false]);
         }
     }
 
-    public function destroy($post) {
-        $posts = Post::find($post)->delete();
-        return response()->json(['message' => 'Page successfully moved to trash']);
+    public function destroy(int $post_id) {
+        $post = Post::findOrFail($post_id)->delete();
+        return response()->json(['post_id' => $post->id ,'message' => 'Post successfully moved to trash']);
     }
 
     public function trash() {
-        $pages = Post::onlyTrashed()->get();
-        return response()->json($pages);
+        $posts = Post::onlyTrashed()->get();
+        return response()->json($posts);
     }
 
-    public function restore($post){
-        $pages = Post::withTrashed()->find($post)->restore();
-        return response()->json(['message' => 'Page restored successfully']);
+    public function restore($post_id){
+        $post = Post::withTrashed()->findOrFail($post_id)->restore();
+        return response()->json(['post_id' => $post->id , 'message' => 'Post restored successfully']);
     }
 
-    public function delete($post) {
-        $pages = Post::withTrashed()->find($post)->forceDelete();
-        return response()->json(['message' => 'Page deleted successfully']);
+    public function delete($post_id) {
+        $post = Post::withTrashed()->findOrFail($post_id)->forceDelete();
+        return response()->json(['$post_id' => $post->id , 'message' => 'Post deleted successfully']);
     }
 }
