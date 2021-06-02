@@ -5,18 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Status extends Model
+class Category extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
+        'slug',
+        'parent_id',
     ];
 
     public function posts(){
-        return $this->hasMany(Post::class, 'status_id', 'id');
-    }
-    public function pages(){
-        return $this->hasMany(Page::class, 'status_id', 'id');
+        return $this->belongsToMany(Post::class, 'categories_posts', 'post_id','category_id');
     }
 }

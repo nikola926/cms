@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WidgetController;
 use App\Http\Controllers\MenuController;
 
@@ -19,23 +21,18 @@ use App\Http\Controllers\MenuController;
 |
 */
 
-
-
 Route::group([
 
     'middleware' => 'api',
     'prefix' => 'auth'
 
 ], function ($router) {
-
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('auth:api');
     Route::get('profile', [AuthController::class, 'profile'])->middleware('auth:api');
-
 });
-
 
 Route::group(['middleware' => 'role:developer'], function() {
     Route::get('/dashboard', function() {
@@ -43,7 +40,7 @@ Route::group(['middleware' => 'role:developer'], function() {
     });
 });
 
-
+//PAGE ROUTE
 Route::group([
     'middleware' => 'api',
     'prefix' => 'pages'
@@ -56,6 +53,21 @@ Route::group([
 });
 Route::resource('pages', PagesController::class);
 
-Route::resource('widgets', WidgetController::class);
+//POSTS ROUTE
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'posts'
+], function ($router) {
 
+    Route::get('/trash', [PostController::class, 'trash']);
+    Route::post('/trash/{page}', [PostController::class, 'restore']);
+    Route::delete('/trash/{page}', [PostController::class, 'delete']);
+
+});
+Route::resource('posts', PostController::class);
+
+//CATEGORY ROUTE
+Route::resource('category', CategoryController::class);
+Route::resource('widgets', WidgetController::class);
 Route::resource('menu', MenuController::class);
+
