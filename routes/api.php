@@ -15,8 +15,8 @@ use App\Http\Controllers\MenuController;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
+| Here is where you can register API router for your application. These
+| router are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
@@ -42,16 +42,17 @@ Route::group(['middleware' => 'role:developer'], function() {
 
 //PAGE ROUTE
 Route::group([
-    'middleware' => 'api',
-    'prefix' => 'pages'
+    'middleware' => 'api','middleware' => 'auth:api'
 ], function ($router) {
 
-    Route::get('/trash', [PagesController::class, 'trash']);
-    Route::post('/trash/{page}', [PagesController::class, 'restore']);
-    Route::delete('/trash/{page}', [PagesController::class, 'delete']);
+    Route::get('/pages/trash', [PagesController::class, 'trash']);
+    Route::post('/pages/trash/{page}', [PagesController::class, 'restore']);
+    Route::delete('/pages/trash/{page}', [PagesController::class, 'delete']);
+
+    Route::resource('/pages', PagesController::class);
 
 });
-Route::resource('pages', PagesController::class);
+
 
 //POSTS ROUTE
 Route::group([

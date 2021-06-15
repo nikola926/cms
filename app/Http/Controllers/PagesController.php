@@ -62,12 +62,12 @@ class PagesController extends Controller
 
 
     public function show(int $page_id) {
-        $page = Pages::where('id', $page_id)->with('featured_image', 'status', 'author')->get();
+        $page = Page::where('id', $page_id)->with('featured_image', 'status', 'author')->get();
         return response()->json($page);
     }
 
     public function edit(int $page_id) {
-        $page = Pages::where('id', $page_id)->with('featured_image', 'status', 'author')->get();
+        $page = Page::where('id', $page_id)->with('featured_image', 'status', 'author')->get();
 
         return response()->json($page);
     }
@@ -97,7 +97,7 @@ class PagesController extends Controller
         }
 
 
-        $page = Pages::findOrFail($page_id)->update([
+        $page = Page::findOrFail($page_id)->update([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
@@ -115,7 +115,7 @@ class PagesController extends Controller
 
 
     public function destroy(int $page_id) {
-        $page = Pages::findOrFail($page_id)->delete();
+        $page = Page::findOrFail($page_id)->delete();
         return response()->json(['message' => 'Page successfully moved to trash']);
     }
 
@@ -126,12 +126,12 @@ class PagesController extends Controller
 
 
     public function restore(int $page_id){
-        Pages::withTrashed()->findOrFail($page_id)->restore();
+        Page::withTrashed()->findOrFail($page_id)->restore();
         return response()->json(['message' => 'Page restored successfully']);
     }
 
     public function delete(int $page_id) {
-        Pages::withTrashed()->findOrFail($page_id)->forceDelete();
+        Page::withTrashed()->findOrFail($page_id)->forceDelete();
         return response()->json(['message' => 'Page deleted successfully']);
     }
 
