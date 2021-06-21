@@ -9,6 +9,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WidgetController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\PostTranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,21 +54,29 @@ Route::group([
 });
 Route::resource('pages', PagesController::class);
 
-//POSTS ROUTE
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'posts'
-], function ($router) {
 
-    Route::get('/trash', [PostController::class, 'trash']);
-    Route::post('/trash/{page}', [PostController::class, 'restore']);
-    Route::delete('/trash/{page}', [PostController::class, 'delete']);
-
-});
-Route::resource('posts', PostController::class);
 
 //CATEGORY ROUTE
 Route::resource('category', CategoryController::class);
 Route::resource('widgets', WidgetController::class);
 Route::resource('menu', MenuController::class);
 
+
+//POSTS ROUTE
+Route::group([
+    'middleware' => 'api',
+    'prefix' => '{lang}'
+], function ($router) {
+
+    Route::post('post/{main_post?}', [PostTranslationController::class, 'store']);
+    Route::get('post/trash', [PostTranslationController::class, 'trash']);
+    Route::post('post/trash/{page}', [PostTranslationController::class, 'restore']);
+    Route::delete('post/trash/{page}', [PostTranslationController::class, 'delete']);
+
+    Route::resource('post', PostTranslationController::class);
+
+});
+
+Route::get('/posts', [PostController::class, 'index']);
+
+Route::get('lang/{lang}', [\App\Http\Controllers\LanguageController::class, 'switchLang']);

@@ -4,16 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Session;
 
-class Post extends Model
+class PostTranslation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
+    protected $fillable = [
+        'main_post_id',
+        'lang',
+        'title',
+        'slug',
+        'content',
+        'featured_image_id',
+        'author_id',
+        'status_id',
+    ];
 
-    public function post() {
+    public function lang_filter() {
 
-        return $this->hasMany(PostTranslation::class, 'main_post_id', 'id');
+        return $this->hasOne(Post::class, 'id','main_post_id');
     }
 
     public function featured_image(){

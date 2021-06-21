@@ -22,13 +22,6 @@ class PostFactory extends Factory
      */
     public function definition()
     {
-        $title = $this->faker->text(50);
-        return [
-            'title'=> $title,
-            'slug'=> Str::slug($title),
-            'content' => $this->faker->text(200),
-            'author_id' => rand(1,2),
-            'status_id' => rand(1,2),
-        ];
+
     }
 }
