@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use Database\Factories\PostFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\PostRelation;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\Post;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Faker\Generator;
+use Illuminate\Support\Facades\Config;
 
 class PostSeeder extends Seeder
 {
@@ -20,25 +19,29 @@ class PostSeeder extends Seeder
      */
     public function run()
     {
-//        Post::factory()->count(50)->create();
 
-        for ($i=0; $i < 100; $i++) {
+        $langs = Config::get('languages');
+        $authors = User::all();
+        $statuses = Status::all();
+
+        for ($i=0; $i <= 10; $i++) {
             $title = 'Title '.$i;
-            DB::table('post_translations')->insert(
+
+            $main_post_id = PostRelation::create();
+
+            foreach ($langs as $lang){
+                DB::table('posts')->insert(
                 [
-                    'main_post_id' => rand(1, 5),
-                    'lang' => Arr::random(['rs','en']),
-                    'title' => $title,
-                    'slug' => Str::slug($title),
+                    'main_post_id' => $main_post_id->id,
+                    'lang' => $lang,
+                    'title' => 'Title '.$i.' '.$lang,
+                    'slug' => Str::slug($title.$lang),
                     'content' => 'lorem ipsum',
-                    'author_id' => rand(1, 2),
-                    'status_id' => rand(1, 2),
+                    'author_id' => $authors->random()->id,
+                    'status_id' => $statuses->random()->id,
                 ]
             );
+            }
         }
-
-
-
-
     }
 }

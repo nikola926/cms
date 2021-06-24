@@ -10,11 +10,16 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-
-    public function post() {
-
-        return $this->hasMany(PostTranslation::class, 'main_post_id', 'id');
-    }
+    protected $fillable = [
+        'main_post_id',
+        'lang',
+        'title',
+        'slug',
+        'content',
+        'featured_image_id',
+        'author_id',
+        'status_id',
+    ];
 
     public function featured_image(){
         return $this->hasOne(Media::class, 'id', 'featured_image_id');

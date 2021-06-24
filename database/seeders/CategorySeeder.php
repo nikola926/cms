@@ -19,11 +19,14 @@ class CategorySeeder extends Seeder
     {
         Category::factory()->count(10)->create();
 
-        for ($i=0; $i < 100; $i++) {
+        $categories = Category::all();
+        $posts = Post::all();
+
+        foreach ($posts as $post) {
             DB::table('categories_posts')->insert(
                 [
-                    'category_id' => rand(1,10),
-                    'post_id' => rand(1,50),
+                    'category_id' => $categories->random()->id,
+                    'post_id' => $post->id,
                 ]
             );
         }

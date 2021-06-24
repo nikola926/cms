@@ -15,6 +15,8 @@ class CreatePagesTable extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('main_page_id')->nullable()->constrained('page_relations');
+            $table->string('lang');
             $table->string('title');
             $table->string('slug');
             $table->text('content')->nullable();

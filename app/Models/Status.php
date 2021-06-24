@@ -9,6 +9,9 @@ class Status extends Model
 {
     use HasFactory;
 
+    const STATUS_DRAFT = 1;
+    const STATUS_PUBLISH = 2;
+
     protected $fillable = [
         'name',
     ];
