@@ -16,9 +16,4 @@ class Category extends Model
         'slug',
         'parent_id',
     ];
-
-    public function posts(){
-        return $this->belongsToMany(Post::class, 'categories_posts', 'category_id','post_id');
     }
-
-}

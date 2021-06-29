@@ -84,8 +84,18 @@ class CategoryController extends Controller
 
     }
 
-    public function show(string $lang, int $main_category_id){
-        $category = CategoryRelation::where('id',$main_category_id)->with('category', 'post_relation')->first();
+    public function show(string $lang, int $main_category_id)
+    {
+        // Include translated posts
+        $category = CategoryRelation::findOrFail($main_category_id)
+            ->with([
+                'category' => function ($query) use ($lang) {
+                    return $query->where('lang', $lang);
+                },
+                'post_relation.post' => function ($query) use ($lang) {
+                    return $query->where('lang', $lang);
+                }])
+            ->first();
 
         return response()->json($category);
     }

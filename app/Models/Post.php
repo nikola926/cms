@@ -35,4 +35,8 @@ class Post extends Model
     public function category(){
         return $this->belongsToMany(Category::class, 'categories_posts', 'post_id', 'category_id' );
     }
+
+    public function postRelation(){
+        return $this->belongsTo(PostRelation::class, 'id', 'main_post_id');
+    }
 }

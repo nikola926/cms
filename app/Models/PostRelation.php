@@ -14,7 +14,6 @@ class PostRelation extends Model
     }
 
     public function post() {
-        return $this->hasMany(Post::class, 'main_post_id', 'id')
-                     ->where('lang','=', 'sr');
+        return $this->hasMany(Post::class, 'main_post_id', 'id');
     }
 }
