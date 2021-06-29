@@ -72,9 +72,8 @@ class PostController extends Controller
         }
     }
 
-    public function show(string $lang, int $post_id){
-        $current_post = Post::findOrFail($post_id);
-        $post = Post::where(['main_post_id'=> $current_post->main_post_id, 'lang' => $lang])->with('category','author', 'featured_image', 'status')->get();
+    public function show(string $lang, int $main_post_id){
+        $post = Post::where(['main_post_id'=> $main_post_id, 'lang' => $lang])->with('category','author', 'featured_image', 'status')->firstOrFail();
 
         return response()->json($post);
     }

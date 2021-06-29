@@ -3,21 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\CategoryRelation;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
-    public function index() {
-        $categories = Category::with('posts')->get();
+    public function allLangCategory() {
+        $category = CategoryRelation::with('allLangCategory')->paginate(10);
+        return response()->json($category);
+    }
+
+    public function index(string $lang) {
+        $categories = Category::with('posts')->where('lang', $lang)->paginate(10);
         return response()->json($categories);
     }
 
-    public function store(Request $request) {
-        $validated = $request->validate([
+    public function store(Request $request, string $lang,int $main_category_id = null) {
+        $request->validate([
             'name' => 'required|unique:categories|max:255',
+            'lang' => 'required|unique:categories,lang,NULL,id,$main_category_id,' . $main_category_id
         ]);
+        if(!isset($main_page_id)){
+            $main_category = CategoryRelation::create();
+            $main_category_id = $main_category->id;
+        }
 
+        $lang = $request->lang;
         $name = $request->name;
         $slug = Str::slug($name);
 
@@ -31,6 +45,8 @@ class CategoryController extends Controller
 
 
         $category = Category::create([
+            'main_category_id' => $main_category_id,
+            'lang' => $lang,
             'name' => $name,
             'parent_id' => $parent_id,
             'slug' => $slug,
@@ -40,43 +56,40 @@ class CategoryController extends Controller
         if($category){
             return response()->json($category);
         }else{
-            return response()->json(['status' => false]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
 
     }
 
-    public function update(Request $request, $category){
+    public function update(Request $request, string $lang,int $category_id) {
+        $request->validate([
+            'name' => 'required|unique:categories|max:255',
+        ]);
+
 
         $name = $request->name;
         $slug = Str::slug($name);
 
-        $parent = $request->parent_id;
-
-        if($parent){
-            $parent_id = $parent;
-        }else{
-            $parent_id = null;
-        }
-
-
-        $categories = Category::find($category)->update([
+        $category = Category::findOrFail($category_id)->update([
             'name' => $name,
-            'parent_id' => $parent_id,
             'slug' => $slug,
 
         ]);
 
-        if($categories){
-            return response()->json(['message' => 'Category updated successfully']);
+        if($category){
+            return response()->json($category);
         }else{
-            return response()->json(['status' => false]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
+
     }
 
-    public function show($category) {
-        $categories = Category::where('id', $category)->with('posts')->get();
-        return response()->json($categories);
+    public function show(string $lang, int $main_category_id){
+        $category = CategoryRelation::where('id',$main_category_id)->with('category', 'post_relation')->first();
+
+        return response()->json($category);
     }
+
 
     public function destroy($category) {
         $pages = Category::find($category)->forceDelete();

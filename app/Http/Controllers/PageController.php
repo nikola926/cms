@@ -70,9 +70,8 @@ class PageController extends Controller
         }
     }
 
-    public function show(string $lang, int $page_id){
-        $current_page = Page::findOrFail($page_id);
-        $page = Page::where(['main_page_id'=> $current_page->main_page_id, 'lang' => $lang])->with('author', 'featured_image', 'status')->get();
+    public function show(string $lang, int $main_page_id){
+        $page = Page::where(['main_page_id'=> $main_page_id, 'lang' => $lang])->with('author', 'featured_image', 'status')->first();
 
         return response()->json($page);
     }

@@ -19,6 +19,6 @@
                 'type' => $image_ext,
             ]);
 
-            return (1);
+            return $image->id;
         }
     }
