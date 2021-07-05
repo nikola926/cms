@@ -32,7 +32,11 @@ class Post extends Model
         return $this->hasOne(User::class, 'id', 'author_id');
     }
 
-    public function category(){
-        return $this->belongsToMany(Category::class, 'categories_posts', 'post_id', 'category_id' );
+//    public function category(){
+//        return $this->belongsToMany(Category::class, 'categories_posts', 'post_id', 'category_id' );
+//    }
+
+    public function post_relation(){
+        return $this->belongsTo(PostRelation::class, 'id', 'main_post_id');
     }
 }

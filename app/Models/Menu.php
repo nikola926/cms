@@ -14,7 +14,7 @@ class Menu extends Model
     ];
 
     public function menu_items(){
-        return $this->hasMany(MenuItem::class, 'menu_id', 'id')->where('parent_id', NULL)->with('child_items');
+        return $this->hasMany(MenuItem::class, 'menu_id', 'id');
 
     }
 

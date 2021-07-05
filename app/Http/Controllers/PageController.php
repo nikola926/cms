@@ -13,8 +13,8 @@ use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
-    public function allLangPages() {
-        $pages = PageRelation::with('allLangPages')->paginate(10);
+    public function all_lang_pages() {
+        $pages = PageRelation::with('all_lang_pages')->paginate(10);
         return response()->json($pages);
     }
 

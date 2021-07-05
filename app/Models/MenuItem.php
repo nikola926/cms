@@ -9,14 +9,19 @@ class MenuItem extends Model
 {
     use HasFactory;
 
+    const MENU_ITEM_TYPE_POST = 'posts';
+    const MENU_ITEM_TYPE_PAGE = 'pages';
+    const MENU_ITEM_TYPE_CATEGORY = 'category';
+    const MENU_ITEM_TYPE_EXTERNAL = 'external';
+
     protected $fillable = [
         'menu_id',
         'parent_id',
         'lang',
         'order',
         'name',
-        'link_id',
-        'link',
+        'related_id',
+        'item_properties',
         'type',
     ];
 

@@ -9,12 +9,15 @@ class PostRelation extends Model
 {
     use HasFactory;
 
-    public function allLangPosts(){
+    public function all_lang_posts(){
         return $this->hasMany(Post::class, 'main_post_id', 'id');
     }
 
     public function post() {
-        return $this->hasMany(Post::class, 'main_post_id', 'id')
-                     ->where('lang','=', 'sr');
+        return $this->hasMany(Post::class, 'main_post_id', 'id');
+    }
+
+    public function category_relation() {
+        return $this->belongsToMany(CategoryRelation::class, 'categories_posts','post_id', 'category_id');
     }
 }

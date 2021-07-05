@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
-    public function allLangCategory() {
-        $category = CategoryRelation::with('allLangCategory')->paginate(10);
+    public function all_lang_category() {
+        $category = CategoryRelation::with('all_lang_category')->paginate(10);
         return response()->json($category);
     }
 
     public function index(string $lang) {
-        $categories = Category::with('posts')->where('lang', $lang)->paginate(10);
+        $categories = Category::where('lang', $lang)->get();
         return response()->json($categories);
     }
 
@@ -84,9 +84,17 @@ class CategoryController extends Controller
 
     }
 
-    public function show(string $lang, int $main_category_id){
-        $category = CategoryRelation::where('id',$main_category_id)->with('category', 'post_relation')->first();
-
+    public function show(string $lang, int $main_category_id)
+    {
+        $category = CategoryRelation::findOrFail($main_category_id)
+            ->with([
+                'category' => function ($query) use ($lang) {
+                    return $query->where('lang', $lang);
+                },
+                'post_relation.post' => function ($query) use ($lang) {
+                    return $query->where('lang', $lang);
+                }])
+            ->first();
         return response()->json($category);
     }
 

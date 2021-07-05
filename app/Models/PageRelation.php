@@ -9,7 +9,7 @@ class PageRelation extends Model
 {
     use HasFactory;
 
-    public function allLangPages(){
+    public function all_lang_pages(){
         return $this->hasMany(Page::class, 'main_page_id', 'id');
     }
 }

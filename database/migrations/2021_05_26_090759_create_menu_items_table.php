@@ -20,7 +20,8 @@ class CreateMenuItemsTable extends Migration
             $table->string('lang');
             $table->integer('order');
             $table->string('name');
-            $table->string('slug');
+            $table->string('related_id')->nullable();
+            $table->text('item_properties')->nullable();
             $table->string('type');
             $table->timestamps();
 
