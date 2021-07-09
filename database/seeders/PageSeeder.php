@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Seeder;
+use App\Models\PageRelation;
 use App\Models\Status;
-use App\Models\Page;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PageSeeder extends Seeder
 {
@@ -17,38 +19,29 @@ class PageSeeder extends Seeder
      */
     public function run()
     {
-        $draft = new Status();
-        $draft->name = 'draft';
-        $draft->save();
+        $langs = Config::get('languages');
+        $authors = User::all();
+        $statuses = Status::all();
 
-        $publish = new Status();
-        $publish->name = 'publish';
-        $publish->save();
+        for ($i=0; $i <= 10; $i++) {
+            $title = 'Page '.$i;
 
-        $draft_status = Status::where('name','draft')->first();
-        $publish_status = Status::where('name','publish')->first();
-        $author_id = User::where('id', 1)->first();
+            $main_post_id = PageRelation::create();
 
-
-
-        $pages = new Page();
-        $pages->title = 'About';
-        $pages->slug = 'about';
-        $pages->content = 'Test content';
-        $pages->featured_image_id = null;
-        $pages->author_id = $author_id->id;
-        $pages->status_id = $draft_status->id;
-        $pages->save();
-
-        $pages = new Page();
-        $pages->title = 'Home';
-        $pages->slug = 'home';
-        $pages->content = 'Test content';
-        $pages->featured_image_id = null;
-        $pages->author_id = $author_id->id;
-        $pages->status_id = $publish_status->id;
-        $pages->save();
-
+            foreach ($langs as $lang){
+                DB::table('pages')->insert(
+                    [
+                        'main_page_id' => $main_post_id->id,
+                        'lang' => $lang,
+                        'title' => 'Title '.$i.' '.$lang,
+                        'slug' => Str::slug($title.$lang),
+                        'content' => 'lorem ipsum',
+                        'author_id' => $authors->random()->id,
+                        'status_id' => $statuses->random()->id,
+                    ]
+                );
+            }
+        }
 
     }
 }

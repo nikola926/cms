@@ -13,6 +13,8 @@ class Page extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'main_page_id',
+        'lang',
         'title',
         'slug',
         'content',
