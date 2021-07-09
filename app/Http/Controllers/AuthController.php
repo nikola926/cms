@@ -14,7 +14,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         $credentials = $request->only(['email', 'password']);
 
         if (!$token = auth()->attempt($credentials)) {
@@ -27,6 +26,11 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        $request->validate([
+            'name' => 'string|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:50'
+        ]);
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

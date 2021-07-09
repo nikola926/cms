@@ -10,18 +10,18 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Helpers\Media\featuredImage;
-use App\Models\Status;
-use Illuminate\Support\Facades\Validator;
 
 
 class PostController extends Controller
 {
-    public function all_lang_posts() {
-        $posts = PostRelation::with('all_lang_posts')->paginate(10);
+    public function all_lang_posts(Request $request) {
+        $posts_per_page = $request->posts_per_page;
+        $posts = PostRelation::with('all_lang_posts')->paginate($posts_per_page);
         return response()->json($posts);
     }
 
-    public function index(string $lang) {
+    public function index(Request $request, string $lang) {
+        $posts_per_page = $request->posts_per_page;
         $posts = PostRelation::with
             ([
                 'post' => function ($query) use ($lang) {
@@ -34,15 +34,16 @@ class PostController extends Controller
                     return $query->where('lang', $lang);
                 }
             ])
-            ->paginate(10);
+            ->paginate($posts_per_page);
 
         return response()->json($posts);
     }
 
     public function store(Request $request, string $lang,int $main_post_id = null) {
-        $test = $request->validate([
+         $request->validate([
             'title' => 'required|unique:posts|max:255',
-            'lang' => 'required|unique:posts,lang,NULL,id,main_post_id,' . $main_post_id
+            'lang' => 'required|unique:posts,lang,NULL,id,main_post_id,' . $main_post_id,
+            'status_id' => 'required|exists:statuses,id'
         ]);
 
         if(!isset($main_post_id)){
@@ -55,7 +56,9 @@ class PostController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->post_content;
         $featured_image = $request->file('featured_image');
-        $categories = [1,2];
+        $categories_str = $request->categories;
+        $categories = explode(',', str_replace(array('[', ']' ), '', $categories_str));
+        $status_id = $request->status_id;
 
 
 
@@ -78,26 +81,20 @@ class PostController extends Controller
             'content' => $content,
             'featured_image_id' => $image_id,
             'author_id' => Auth::user()->id,
-            'status_id' => Status::STATUS_PUBLISH,
+            'status_id' => $status_id,
         ]);
 
-        foreach ($categories as $category_id) {
-            $data = ['category_id' => $category_id];
-            $check_categories = Validator::make($data, [
-                'category_id' => 'unique:categories_posts,category_id,NULL,id,post_id,' . $main_post_id
-            ]);
+        DB::table('categories_posts')->where('post_id', $main_post_id)->delete();
 
-            if($check_categories->fails() ){
-                DB::table('categories_posts')->insert([
-                    'category_id' => $category_id,
-                    'post_id' => $main_post_id,
-                ]);
-            }
+        foreach ($categories as $category_id) {
+            DB::table('categories_posts')->insert([
+                'category_id' => $category_id,
+                'post_id' => $main_post_id,
+            ]);
         }
 
-
         if($post){
-            return response()->json([$post,$check_categories,$test]);
+            return response()->json([$post]);
         }else{
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
@@ -124,7 +121,7 @@ class PostController extends Controller
     public function update(Request $request, string $lang, int $post_id) {
         $request->validate([
             'title' => ['required', Rule::unique('posts')->ignore($post_id)],
-            'status_id' => 'required'
+            'status_id' => 'required|exists:statuses,id'
         ]);
 
         $title = $request->title;
@@ -133,7 +130,8 @@ class PostController extends Controller
         $featured_image = $request->file('featured_image');
         $old_image = $request->old_image;
         $status_id = $request->status_id;
-        $categories[] = $request->categories;
+        $categories_str = $request->categories;
+        $categories = explode(',', str_replace(array('[', ']' ), '', $categories_str));
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
@@ -149,15 +147,24 @@ class PostController extends Controller
             $content = null;
         }
 
-        $post = Post::findOrFail($post_id)->update([
+        $post = Post::findOrFail($post_id);
+        $post->update([
             'title' => $title,
             'slug' => $slug,
             'content' => $content,
             'featured_image_id' => $image_id,
             'status_id' => $status_id,
         ]);
+        $main_post_id = $post->main_post_id;
 
-        $main_post_id = Post::findOrFail($post_id);
+        DB::table('categories_posts')->where('post_id', $main_post_id)->delete();
+
+        foreach ($categories as $category_id) {
+            DB::table('categories_posts')->insert([
+                'category_id' => $category_id,
+                'post_id' => $main_post_id,
+            ]);
+        }
 
         if($post){
             return response()->json(['message' => 'Post updated successfully', 'post' => $post]);
@@ -172,8 +179,9 @@ class PostController extends Controller
         return response()->json(['post_id' => $post_id ,'message' => 'Post successfully moved to trash']);
     }
 
-    public function trash(string $lang) {
-        $posts = Post::onlyTrashed()->where('lang', $lang)->paginate(10);
+    public function trash(Request $request,string $lang) {
+        $posts_per_page = $request->posts_per_page;
+        $posts = Post::onlyTrashed()->where('lang', $lang)->paginate($posts_per_page);
         return response()->json($posts);
     }
 

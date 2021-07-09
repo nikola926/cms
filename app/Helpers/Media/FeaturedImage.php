@@ -12,9 +12,10 @@
             $up_location = 'image/';
             $last_image = $up_location.$img_slug;
             $featured_image->move($up_location,$img_slug);
+            $alt = substr($featured_image->getClientOriginalName(), 0, strpos($featured_image->getClientOriginalName(), "."));
 
             $image = Media::create([
-                'alt' => $featured_image->getClientOriginalName(),
+                'alt' => $alt,
                 'slug' => $last_image,
                 'type' => $image_ext,
             ]);

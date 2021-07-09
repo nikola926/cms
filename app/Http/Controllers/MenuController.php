@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class MenuController extends Controller
 {
@@ -49,8 +50,9 @@ class MenuController extends Controller
                     return $query->where(['lang' => $lang, 'menu_id' => $menu_id]);
                 }])
             ->firstOrFail();
+        $langs = Config::get('languages');
 
-        return response()->json($menu);
+        return response()->json([$menu, 'langs' => $langs]);
     }
 
     public  function store_item(Request $request, string $lang, int $menu_id) {

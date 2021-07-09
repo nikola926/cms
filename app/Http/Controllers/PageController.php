@@ -13,21 +13,24 @@ use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
-    public function all_lang_pages() {
-        $pages = PageRelation::with('all_lang_pages')->paginate(10);
+    public function all_lang_pages(Request $request) {
+        $pages_per_page = $request->pages_per_page;
+        $pages = PageRelation::with('all_lang_pages')->paginate($pages_per_page);
         return response()->json($pages);
     }
 
-    public function index(string $lang)
+    public function index(Request $request, string $lang)
     {
-        $pages = Page::with('featured_image', 'status', 'author')->where('lang', $lang)->paginate(10);
+        $pages_per_page = $request->pages_per_page;
+        $pages = Page::with('featured_image', 'status', 'author')->where('lang', $lang)->paginate($pages_per_page);
         return $pages;
     }
 
     public function store(Request $request, string $lang,int $main_page_id = null) {
         $request->validate([
             'title' => 'required|unique:pages|max:255',
-            'lang' => 'required|unique:pages,lang,NULL,id,main_page_id,' . $main_page_id
+            'lang' => 'required|unique:pages,lang,NULL,id,main_page_id,' . $main_page_id,
+            'status_id' => 'required|exists:statuses,id'
         ]);
         if(!isset($main_page_id)){
             $main_page = PageRelation::create();
@@ -39,6 +42,7 @@ class PageController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->page_content;
         $featured_image = $request->file('featured_image');
+        $status_id = $request->status_id;
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
@@ -60,7 +64,7 @@ class PageController extends Controller
             'content' => $content,
             'featured_image_id' => $image_id,
             'author_id' => Auth::user()->id,
-            'status_id' => Status::STATUS_PUBLISH,
+            'status_id' => $status_id,
         ]);
 
         if($page){
@@ -79,7 +83,7 @@ class PageController extends Controller
     public function update(Request $request, string $lang, int $page_id) {
         $request->validate([
             'title' => ['required', Rule::unique('pages')->ignore($page_id)],
-            'status_id' => 'required'
+            'status_id' => 'required|exists:statuses,id'
         ]);
 
         $title = $request->title;
@@ -123,18 +127,19 @@ class PageController extends Controller
         return response()->json(['page_id' => $page_id ,'message' => 'Page successfully moved to trash']);
     }
 
-    public function trash(string $lang) {
-        $pages = Page::onlyTrashed()->where('lang', $lang)->paginate(10);
+    public function trash(Request $request,string $lang) {
+        $pages_per_page = $request->pages_per_page;
+        $pages = Page::onlyTrashed()->where('lang', $lang)->paginate($pages_per_page);
         return response()->json($pages);
     }
 
     public function restore(string $lang, $page_id){
-        Page::withTrashed()->findOrFail($page_id)->restore();
+        Page::findOrFail($page_id)->withTrashed()->restore();
         return response()->json(['page_id' => $page_id , 'message' => 'Page restored successfully']);
     }
 
     public function delete(string $lang, $page_id) {
-        Page::withTrashed()->findOrFail($page_id)->forceDelete();
+        Page::findOrFail($page_id)->withTrashed()->forceDelete();
         return response()->json(['page_id' => $page_id , 'message' => 'Page deleted successfully']);
     }
 

@@ -10,17 +10,20 @@ class RoleMiddleware
 
     public function handle($request, Closure $next, $role, $permission = null)
     {
+        if (!auth()->user()){
 
-        if(!auth()->user()->hasRole($role)) {
+            return response()->json(['message' => 'User not logged in!'], 401);
 
-            abort(401);
+        }elseif(!auth()->user()->hasRole($role)) {
+
+            return response()->json(['message' => 'Unauthorized'], 401);
 
         }
 
-        if($permission !== null && !auth()->user()->can($permission)) {
-
-            abort(403);
-        }
+//        if($permission !== null && !auth()->user()->can($permission)) {
+//
+//            abort(403);
+//        }
 
         return $next($request);
 

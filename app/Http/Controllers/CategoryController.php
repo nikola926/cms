@@ -8,11 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\CategoryRelation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
     public function all_lang_category() {
-        $category = CategoryRelation::with('all_lang_category')->paginate(10);
+        $category = CategoryRelation::with('all_lang_category');
         return response()->json($category);
     }
 
@@ -24,9 +25,9 @@ class CategoryController extends Controller
     public function store(Request $request, string $lang,int $main_category_id = null) {
         $request->validate([
             'name' => 'required|unique:categories|max:255',
-            'lang' => 'required|unique:categories,lang,NULL,id,$main_category_id,' . $main_category_id
+            'lang' => 'required|unique:categories,lang,NULL,id,main_category_id,' . $main_category_id
         ]);
-        if(!isset($main_page_id)){
+        if(!isset($main_category_id)){
             $main_category = CategoryRelation::create();
             $main_category_id = $main_category->id;
         }
@@ -63,7 +64,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, string $lang,int $category_id) {
         $request->validate([
-            'name' => 'required|unique:categories|max:255',
+            'name' => ['required', Rule::unique('categories')->ignore($category_id)],
         ]);
 
 
@@ -77,7 +78,7 @@ class CategoryController extends Controller
         ]);
 
         if($category){
-            return response()->json($category);
+            return response()->json(['message' => 'Category updated successfully'], 200);
         }else{
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
@@ -99,15 +100,9 @@ class CategoryController extends Controller
     }
 
 
-    public function destroy($category) {
-        $pages = Category::find($category)->forceDelete();
+    public function destroy(string $lang, int $category_id) {
+        Category::findOrFail($category_id)->forceDelete();
         return response()->json(['message' => 'Category deleted successfully']);
-    }
-
-    public function edit($category) {
-        $categories = Category::where('id', $category)->get();
-
-        return response()->json($categories);
     }
 
 }

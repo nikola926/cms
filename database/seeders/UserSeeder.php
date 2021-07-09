@@ -22,8 +22,8 @@ class UserSeeder extends Seeder
 
 
         $dev_role = new Role();
-        $dev_role->slug = 'developer';
-        $dev_role->name = 'Front-end Developer';
+        $dev_role->slug = 'administrator';
+        $dev_role->name = 'Administrator';
         $dev_role->save();
         $dev_role->permissions()->attach($dev_permission);
 
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
         $manager_role->save();
         $manager_role->permissions()->attach($manager_permission);
 
-        $dev_role = Role::where('slug','developer')->first();
+        $dev_role = Role::where('slug','administrator')->first();
         $manager_role = Role::where('slug', 'manager')->first();
 
         $createTasks = new Permission();
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
         $editUsers->save();
         $editUsers->roles()->attach($manager_role);
 
-        $dev_role = Role::where('slug','developer')->first();
+        $dev_role = Role::where('slug','administrator')->first();
         $manager_role = Role::where('slug', 'manager')->first();
         $dev_perm = Permission::where('slug','create-tasks')->first();
         $manager_perm = Permission::where('slug','edit-users')->first();
@@ -62,11 +62,11 @@ class UserSeeder extends Seeder
         $developer->permissions()->attach($dev_perm);
 
         $manager = new User();
-        $manager->name = 'Marko Markovic';
-        $manager->email = 'marko@gmail.com';
-        $manager->password = bcrypt('secret');
+        $manager->name = 'Livra s jezera';
+        $manager->email = 'pedjazv26@gmail.com';
+        $manager->password = bcrypt('zvecancs1');
         $manager->save();
-        $manager->roles()->attach($manager_role);
-        $manager->permissions()->attach($manager_perm);
+        $manager->roles()->attach($dev_role);
+        $manager->permissions()->attach($dev_perm);
     }
 }
