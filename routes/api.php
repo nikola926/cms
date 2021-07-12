@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
@@ -8,6 +7,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\Client\ClientPostController;
+use App\Http\Controllers\Client\ClientPageController;
+use App\Http\Controllers\Client\ClientMenuController;
+use App\Http\Controllers\Client\ClientCategoryController;
 
 
 Route::group([
@@ -30,15 +33,13 @@ Route::group([
 ], function ($router) {
 
     Route::post('category/{main_category?}', [CategoryController::class, 'store']);
-
-
     Route::resource('category', CategoryController::class)->except([
-        'store', 'show', 'index'
+        'store'
     ]);
 });
 Route::get('category', [CategoryController::class, 'all_lang_category'])->middleware('role:administrator');
-Route::get('{lang}/category/{main_category}', [CategoryController::class, 'show']);
-Route::get('{lang}/category', [CategoryController::class, 'index']);
+Route::get('client/{lang}/category/{main_category}', [ClientCategoryController::class, 'show']);
+Route::get('client/{lang}/category', [ClientCategoryController::class, 'index']);
 
 //------------MENU ROUTE------------
 
@@ -53,7 +54,8 @@ Route::group([
 Route::resource('menu', MenuController::class)->except([
     'show'
 ])->middleware('role:administrator');
-Route::get('{lang}/menu/{menu}', [MenuController::class, 'show']);
+Route::get('{lang}/menu/{menu}', [MenuController::class, 'show'])->middleware('role:administrator');
+Route::get('client/{lang}/menu/{menu}', [ClientMenuController::class, 'show']);
 
 //------------POSTS ROUTE------------
 
@@ -68,12 +70,13 @@ Route::group([
     Route::delete('posts/trash/{post}', [PostController::class, 'delete']);
 
     Route::resource('posts', PostController::class)->except([
-        'store', 'show', 'index'
+        'store'
     ]);
 });
+
 Route::get('posts', [PostController::class, 'all_lang_posts'])->middleware('role:administrator');
-Route::get('{lang}/posts/{main_post}', [PostController::class, 'show']);
-Route::get('{lang}/posts', [PostController::class, 'index']);
+Route::get('client/{lang}/posts/{main_post}', [ClientPostController::class, 'show']);
+Route::get('client/{lang}/posts', [ClientPostController::class, 'index']);
 
 //--------PAGE ROUTE---------------
 
@@ -88,12 +91,12 @@ Route::group([
     Route::delete('pages/trash/{page}', [PageController::class, 'delete']);
 
     Route::resource('pages', PageController::class)->except([
-        'store', 'show', 'index'
+        'store'
     ]);
 });
 Route::get('pages', [PageController::class, 'all_lang_pages'])->middleware('role:administrator');
-Route::get('{lang}/pages/{main_page}', [PageController::class, 'show']);
-Route::get('{lang}/pages', [PageController::class, 'index']);
+Route::get('client/{lang}/pages/{main_page}', [ClientPageController::class, 'show']);
+Route::get('client/{lang}/pages', [ClientPageController::class, 'index']);
 
 //--------MEDIA ROUTE---------------
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\PageRelation;
-use App\Models\Status;
 use Illuminate\Http\Request;
 use App\Models\Page;
 use Illuminate\Support\Str;
@@ -14,15 +13,15 @@ use Illuminate\Validation\Rule;
 class PageController extends Controller
 {
     public function all_lang_pages(Request $request) {
-        $pages_per_page = $request->pages_per_page;
-        $pages = PageRelation::with('all_lang_pages')->paginate($pages_per_page);
+        $per_page = $request->per_page;
+        $pages = PageRelation::with('all_lang_pages')->paginate($per_page);
         return response()->json($pages);
     }
 
     public function index(Request $request, string $lang)
     {
-        $pages_per_page = $request->pages_per_page;
-        $pages = Page::with('featured_image', 'status', 'author')->where('lang', $lang)->paginate($pages_per_page);
+        $per_page = $request->per_page;
+        $pages = Page::with('featured_image', 'status', 'author')->where('lang', $lang)->paginate($per_page);
         return $pages;
     }
 
@@ -128,8 +127,8 @@ class PageController extends Controller
     }
 
     public function trash(Request $request,string $lang) {
-        $pages_per_page = $request->pages_per_page;
-        $pages = Page::onlyTrashed()->where('lang', $lang)->paginate($pages_per_page);
+        $per_page = $request->per_page;
+        $pages = Page::onlyTrashed()->where('lang', $lang)->paginate($per_page);
         return response()->json($pages);
     }
 

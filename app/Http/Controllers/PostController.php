@@ -56,8 +56,7 @@ class PostController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->post_content;
         $featured_image = $request->file('featured_image');
-        $categories_str = $request->categories;
-        $categories = explode(',', str_replace(array('[', ']' ), '', $categories_str));
+        $categories = $request->categories;
         $status_id = $request->status_id;
 
 
@@ -130,8 +129,7 @@ class PostController extends Controller
         $featured_image = $request->file('featured_image');
         $old_image = $request->old_image;
         $status_id = $request->status_id;
-        $categories_str = $request->categories;
-        $categories = explode(',', str_replace(array('[', ']' ), '', $categories_str));
+        $categories = $request->categories;
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);

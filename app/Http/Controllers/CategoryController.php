@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\CategoryRelation;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
@@ -67,7 +65,6 @@ class CategoryController extends Controller
             'name' => ['required', Rule::unique('categories')->ignore($category_id)],
         ]);
 
-
         $name = $request->name;
         $slug = Str::slug($name);
 
@@ -87,7 +84,7 @@ class CategoryController extends Controller
 
     public function show(string $lang, int $main_category_id)
     {
-        $category = CategoryRelation::findOrFail($main_category_id)
+        $category = CategoryRelation::where('id', $main_category_id)
             ->with([
                 'category' => function ($query) use ($lang) {
                     return $query->where('lang', $lang);
@@ -95,7 +92,7 @@ class CategoryController extends Controller
                 'post_relation.post' => function ($query) use ($lang) {
                     return $query->where('lang', $lang);
                 }])
-            ->first();
+            ->firstOrFail();
         return response()->json($category);
     }
 
