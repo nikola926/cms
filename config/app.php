@@ -161,6 +161,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
 
         /*
@@ -231,6 +232,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'providers' => App\Providers\PermissionsServiceProvider::class,
         'FeaturedImage' => App\Helpers\Media\FeaturedImage::class,
+        'Image' => Intervention\Image\Facades\Image::class,
 
 
 

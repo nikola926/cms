@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -9,7 +10,31 @@ use App\Models\User;
 class AuthController extends Controller
 {
 
+    public function index() {
+        $users = User::paginate(10);
 
+        return response()->json($users);
+    }
+
+    public function user(int $user_id) {
+        $user = User::where('id', $user_id)->with('roles')->firstOrFail();
+
+        return response()->json($user);
+    }
+
+    public function add_role(Request $request) {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $role = Role::findOrFail($request->role_id);
+
+        $user->roles()->sync($role->id);
+
+        return response()->json(['message' => 'Role attached to user']);
+    }
 
     public function login(Request $request)
     {

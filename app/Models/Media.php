@@ -9,9 +9,18 @@ class Media extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'properties' => 'array',
+    ];
+
     protected $fillable = [
         'alt',
         'slug',
+        'properties',
         'type',
     ];
+
+    public function properties() {
+
+    }
 }

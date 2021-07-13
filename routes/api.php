@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
@@ -19,6 +20,9 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
+    Route::get('users', [AuthController::class, 'index'])->middleware('role:administrator');
+    Route::get('users/{user_id}', [AuthController::class, 'user'])->middleware('role:administrator');
+    Route::post('add_role', [AuthController::class, 'add_role'])->middleware('role:administrator');
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('role:administrator');
@@ -101,5 +105,9 @@ Route::get('client/{lang}/pages', [ClientPageController::class, 'index']);
 //--------MEDIA ROUTE---------------
 
 Route::resource('media', MediaController::class)->middleware('role:administrator');
+
+Route::get('/all_langs', function () {
+    return Config::get('languages');
+});
 
 

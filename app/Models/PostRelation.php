@@ -20,4 +20,8 @@ class PostRelation extends Model
     public function category_relation() {
         return $this->belongsToMany(CategoryRelation::class, 'categories_posts','post_id', 'category_id');
     }
+
+    public function translated_post() {
+        return $this->hasMany(Post::class, 'main_post_id', 'id');
+    }
 }

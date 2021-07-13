@@ -32,6 +32,9 @@ class PostController extends Controller
                 'post.status',
                 'category_relation.category'=> function ($query) use ($lang) {
                     return $query->where('lang', $lang);
+                },
+                'translated_post' => function ($query) {
+                    return $query;
                 }
             ])
             ->paginate($posts_per_page);

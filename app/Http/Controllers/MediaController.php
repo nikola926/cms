@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class MediaController extends Controller
 {
     public  function index() {
-        $media = Media::all();
+        $media = Media::paginate();
 
         return response()->json($media);
     }

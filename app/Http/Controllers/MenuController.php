@@ -50,9 +50,8 @@ class MenuController extends Controller
                     return $query->where(['lang' => $lang, 'menu_id' => $menu_id]);
                 }])
             ->firstOrFail();
-        $langs = Config::get('languages');
 
-        return response()->json([$menu, 'langs' => $langs]);
+        return response()->json($menu);
     }
 
     public  function store_item(Request $request, string $lang, int $menu_id) {

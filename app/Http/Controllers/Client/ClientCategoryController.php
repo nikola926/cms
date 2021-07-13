@@ -13,7 +13,7 @@ class ClientCategoryController extends Controller
         $categories = Category::where('lang', $lang)->get();
         return response()->json($categories);
     }
-    
+
     public function show(string $lang, int $main_category_id)
     {
         $category = CategoryRelation::where('id', $main_category_id)
