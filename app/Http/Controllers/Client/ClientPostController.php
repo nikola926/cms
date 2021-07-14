@@ -23,6 +23,10 @@ class ClientPostController extends Controller
                 return $query->where('lang', $lang);
             }
         ])
+            ->whereHas(
+                'post' , function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            })
             ->paginate($posts_per_page);
 
         return response()->json($posts);

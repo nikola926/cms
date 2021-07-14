@@ -23,20 +23,24 @@ class PostController extends Controller
     public function index(Request $request, string $lang) {
         $posts_per_page = $request->posts_per_page;
         $posts = PostRelation::with
-            ([
-                'post' => function ($query) use ($lang) {
-                    return $query->where('lang', $lang);
-                },
-                'post.author',
-                'post.featured_image',
-                'post.status',
-                'category_relation.category'=> function ($query) use ($lang) {
-                    return $query->where('lang', $lang);
-                },
-                'translated_post' => function ($query) {
-                    return $query;
-                }
-            ])
+        ([
+            'post' => function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            },
+            'post.author',
+            'post.featured_image',
+            'post.status',
+            'category_relation.category'=> function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            },
+            'translated_post' => function ($query) {
+                return $query;
+            }
+        ])
+            ->whereHas(
+            'post' , function ($query) use ($lang) {
+            return $query->where('lang', $lang);
+        })
             ->paginate($posts_per_page);
 
         return response()->json($posts);
@@ -59,6 +63,7 @@ class PostController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->post_content;
         $featured_image = $request->file('featured_image');
+        $featured_image_id = $request->featured_image_id;
         $categories = $request->categories;
         $status_id = $request->status_id;
 
@@ -66,6 +71,8 @@ class PostController extends Controller
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
+        }elseif($featured_image_id){
+            $image_id = $featured_image_id;
         } else{
             $image_id = null;
         }
@@ -88,11 +95,13 @@ class PostController extends Controller
 
         DB::table('categories_posts')->where('post_id', $main_post_id)->delete();
 
-        foreach ($categories as $category_id) {
-            DB::table('categories_posts')->insert([
-                'category_id' => $category_id,
-                'post_id' => $main_post_id,
-            ]);
+        if($categories){
+            foreach ($categories as $category_id) {
+                DB::table('categories_posts')->insert([
+                    'category_id' => $category_id,
+                    'post_id' => $main_post_id,
+                ]);
+            }
         }
 
         if($post){
@@ -130,14 +139,14 @@ class PostController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->post_content;
         $featured_image = $request->file('featured_image');
-        $old_image = $request->old_image;
+        $featured_image_id = $request->featured_image_id;
         $status_id = $request->status_id;
         $categories = $request->categories;
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
-        } elseif ($old_image != 'null') {
-            $image_id = $old_image;
+        } elseif ($featured_image_id) {
+            $image_id = $featured_image_id;
         } else {
             $image_id = null;
         }
@@ -160,11 +169,13 @@ class PostController extends Controller
 
         DB::table('categories_posts')->where('post_id', $main_post_id)->delete();
 
-        foreach ($categories as $category_id) {
-            DB::table('categories_posts')->insert([
-                'category_id' => $category_id,
-                'post_id' => $main_post_id,
-            ]);
+        if($categories){
+            foreach ($categories as $category_id) {
+                DB::table('categories_posts')->insert([
+                    'category_id' => $category_id,
+                    'post_id' => $main_post_id,
+                ]);
+            }
         }
 
         if($post){

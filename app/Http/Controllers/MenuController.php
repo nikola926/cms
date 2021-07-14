@@ -68,6 +68,7 @@ class MenuController extends Controller
         $item_properties = $request->item_properties;
         $type = $request->type;
         $parent_id = $request->parent_id;
+        $lang = $request->lang;
 
         $menu_item = MenuItem::create([
             'menu_id' => $menu_id,

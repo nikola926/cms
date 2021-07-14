@@ -9,6 +9,10 @@ class MenuItem extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'item_properties' => 'array',
+    ];
+
     const MENU_ITEM_TYPE_POST = 'posts';
     const MENU_ITEM_TYPE_PAGE = 'pages';
     const MENU_ITEM_TYPE_CATEGORY = 'category';

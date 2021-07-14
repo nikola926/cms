@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\PostRelation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\CategoryRelation;
@@ -82,20 +83,33 @@ class CategoryController extends Controller
 
     }
 
-    public function show(string $lang, int $main_category_id)
+    public function show(Request $request,string $lang, int $main_category_id)
     {
-        $category = CategoryRelation::where('id', $main_category_id)
-            ->with([
-                'category' => function ($query) use ($lang) {
-                    return $query->where('lang', $lang);
-                },
-                'post_relation.post' => function ($query) use ($lang) {
-                    return $query->where('lang', $lang);
-                }])
-            ->firstOrFail();
-        return response()->json($category);
-    }
+        $per_page = $request->per_page;
 
+        $category = Category::where(['lang' => $lang, 'main_category_id' => $main_category_id])->firstOrFail();
+
+        $posts = PostRelation::with
+        ([
+            'post' => function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            },
+            'post.author',
+            'post.featured_image',
+            'post.status'
+        ])
+            ->whereHas(
+                'category_relation.category' , function ($query) use ($main_category_id) {
+                return $query->where('main_category_id', $main_category_id);
+            })
+            ->whereHas(
+                'post' , function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            })
+            ->paginate($per_page);
+
+        return response()->json(['category' => $category ,'posts' => $posts]);
+    }
 
     public function destroy(string $lang, int $category_id) {
         Category::findOrFail($category_id)->forceDelete();
