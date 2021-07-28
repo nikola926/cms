@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientPageController;
 use App\Http\Controllers\Client\ClientMenuController;
 use App\Http\Controllers\Client\ClientCategoryController;
+use App\Models\Role;
 
 
 Route::group([
@@ -22,7 +23,7 @@ Route::group([
 ], function ($router) {
     Route::get('users', [AuthController::class, 'index'])->middleware('role:administrator');
     Route::get('users/{user_id}', [AuthController::class, 'user'])->middleware('role:administrator');
-    Route::post('add_role', [AuthController::class, 'add_role'])->middleware('role:administrator');
+    Route::post('update', [AuthController::class, 'update'])->middleware('role:administrator');
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('role:administrator');
@@ -108,6 +109,9 @@ Route::resource('media', MediaController::class)->middleware('role:administrator
 
 Route::get('/all_langs', function () {
     return Config::get('languages');
+});
+Route::get('/all_roles', function () {
+    return Role::all();
 });
 
 

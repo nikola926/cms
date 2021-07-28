@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\CategoryRelation;
 use App\Models\PostRelation;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class ClientCategoryController extends Controller
@@ -24,7 +25,7 @@ class ClientCategoryController extends Controller
         $posts = PostRelation::with
         ([
             'post' => function ($query) use ($lang) {
-                return $query->where('lang', $lang);
+                return $query->where(['lang' => $lang,'status_id' => Status::STATUS_PUBLISH]);
             },
             'post.author',
             'post.featured_image',
@@ -36,7 +37,7 @@ class ClientCategoryController extends Controller
             })
             ->whereHas(
                 'post' , function ($query) use ($lang) {
-                return $query->where('lang', $lang);
+                return $query->where(['lang' => $lang,'status_id' => Status::STATUS_PUBLISH]);
             })
             ->paginate($per_page);
 

@@ -21,8 +21,27 @@ class PageController extends Controller
     public function index(Request $request, string $lang)
     {
         $per_page = $request->per_page;
-        $pages = Page::with('featured_image', 'status', 'author')->where('lang', $lang)->paginate($per_page);
-        return $pages;
+        $search = $request->search;
+
+        $pages = PageRelation::with
+        ([
+            'page' => function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            },
+            'page.author',
+            'page.featured_image',
+            'page.status',
+            'translated_page' => function ($query) {
+                return $query;
+            }
+        ])
+            ->whereHas(
+                'page' , function ($query) use ($lang,$search) {
+                return $query->where('lang', $lang)->where('title', 'like', '%' . $search .'%');
+            })
+            ->paginate($per_page);
+
+        return response()->json($pages);
     }
 
     public function store(Request $request, string $lang,int $main_page_id = null) {

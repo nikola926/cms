@@ -20,4 +20,8 @@ class CategoryRelation extends Model
     public function category() {
         return $this->hasMany(Category::class, 'main_category_id', 'id');
     }
+
+    public function translated_category() {
+        return $this->hasMany(Category::class, 'main_category_id', 'id');
+    }
 }

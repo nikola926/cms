@@ -11,18 +11,18 @@ class AuthController extends Controller
 {
 
     public function index() {
-        $users = User::paginate(10);
+        $users = User::with('roles')->paginate(10);
 
         return response()->json($users);
     }
 
-    public function user(int $user_id) {
+    public function user($user_id) {
         $user = User::where('id', $user_id)->with('roles')->firstOrFail();
 
         return response()->json($user);
     }
 
-    public function add_role(Request $request) {
+    public function update(Request $request) {
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'role_id' => 'required|exists:roles,id'
@@ -31,6 +31,7 @@ class AuthController extends Controller
         $user = User::findOrFail($request->user_id);
         $role = Role::findOrFail($request->role_id);
 
+        $user->update(['name' => $request->name]);
         $user->roles()->sync($role->id);
 
         return response()->json(['message' => 'Role attached to user']);
@@ -61,9 +62,11 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $token = auth()->login($user);
+        $role = Role::findOrFail($request->role_id);
 
-        return $this->respondWithToken($token);
+        $user->roles()->sync($role->id);
+
+        return response()->json(['message' => 'User created successfully']);
 
     }
 

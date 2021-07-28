@@ -16,8 +16,24 @@ class CategoryController extends Controller
         return response()->json($category);
     }
 
-    public function index(string $lang) {
-        $categories = Category::where('lang', $lang)->get();
+    public function index(Request $request,string $lang) {
+        $per_page = $request->per_page;
+        $search = $request->search;
+        $categories = CategoryRelation::with
+        ([
+            'category' => function ($query) use ($lang) {
+                return $query->where('lang', $lang);
+            },
+            'translated_category' => function ($query) {
+                return $query;
+            }
+        ])
+            ->whereHas(
+                'category' , function ($query) use ($lang,$search) {
+                return $query->where('lang', $lang)->where('name', 'like', '%' . $search .'%');
+            })
+            ->paginate($per_page);
+
         return response()->json($categories);
     }
 

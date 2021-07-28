@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ClientPostController extends Controller
 {
     public function index(Request $request, string $lang) {
-        $posts_per_page = $request->posts_per_page;
+        $per_page = $request->per_page;
         $posts = PostRelation::with
         ([
             'post' => function ($query) use ($lang) {
@@ -27,7 +27,7 @@ class ClientPostController extends Controller
                 'post' , function ($query) use ($lang) {
                 return $query->where('lang', $lang);
             })
-            ->paginate($posts_per_page);
+            ->paginate($per_page);
 
         return response()->json($posts);
     }
@@ -45,8 +45,15 @@ class ClientPostController extends Controller
                 'category_relation.category'=> function ($query) use ($lang) {
                     return $query->where('lang', $lang);
                 }
-            ])->firstOrFail();
+            ])->whereHas(
+                'post' , function ($query) use ($lang) {
+                return $query->where(['lang' => $lang,'status_id' => Status::STATUS_PUBLISH]);
+            })->first();
+        if($post){
+            return response()->json($post);
+        }else{
+            return response()->json(['message' => 'No post translation'], 404);
+        }
 
-        return response()->json($post);
     }
 }

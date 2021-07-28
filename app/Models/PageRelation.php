@@ -12,4 +12,12 @@ class PageRelation extends Model
     public function all_lang_pages(){
         return $this->hasMany(Page::class, 'main_page_id', 'id');
     }
+
+    public function translated_page() {
+        return $this->hasMany(Page::class, 'main_page_id', 'id');
+    }
+
+    public function page() {
+        return $this->hasMany(Page::class, 'main_page_id', 'id');
+    }
 }

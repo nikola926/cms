@@ -6,6 +6,7 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
@@ -45,9 +46,9 @@ class MenuController extends Controller
     //-----MENU ITEM METHODS-------
 
     public function show(string $lang,int $menu_id) {
-        $menu = Menu::findOrFail($menu_id)
+        $menu = Menu::where('id', $menu_id)
             ->with(['menu_items' => function ($query) use ($lang,$menu_id) {
-                    return $query->where(['lang' => $lang, 'menu_id' => $menu_id]);
+                    return $query->where(['lang' => $lang, 'menu_id' => $menu_id])->orderBy('order');
                 }])
             ->firstOrFail();
 
@@ -55,33 +56,43 @@ class MenuController extends Controller
     }
 
     public  function store_item(Request $request, string $lang, int $menu_id) {
-        $request->validate([
-            'name' => 'required|max:255',
-            'order' => 'required',
-            'related_id' => 'required',
-            'type' => 'required',
-        ]);
-
-        $order = $request->order;
-        $name = $request->name;
-        $related_id = $request->related_id;
-        $item_properties = $request->item_properties;
-        $type = $request->type;
-        $parent_id = $request->parent_id;
         $lang = $request->lang;
+        $menu_id = $request->menu_id;
+        $type = $request->type;
+        $menu_items = collect($request->menu_items);
+        $deleted_items = $request->deleted_items;
 
-        $menu_item = MenuItem::create([
-            'menu_id' => $menu_id,
-            'parent_id' => $parent_id,
-            'lang' => $lang,
-            'order' => $order,
-            'name' => $name,
-            'related_id' => $related_id,
-            'item_properties' => $item_properties,
-            'type' => $type,
-        ]);
+        if($deleted_items){
+            foreach ($deleted_items as $item_id){
+                DB::table('menu_items')->where('id', $item_id)->delete();
+            }
+        }
 
-        return response()->json($menu_item);
+        if($menu_items){
+            $menu_items->map(function ($item, $key) use ($menu_id,$lang,$type) {
+                if(array_key_exists('action', $item)){
+                    if ($item['action'] == 'new_item'){
+                        MenuItem::create([
+                            'menu_id' => $menu_id,
+                            'lang' => $lang,
+                            'order' => $key,
+                            'name' => $item['name'],
+                            'related_id' => $item['related_id'],
+                            'type' => $item['type'],
+                            'item_properties' => $item['item_properties']
+                        ]);
+                    }
+                }else {
+                    $menu_item = MenuItem::findOrFail($item['id']);
+                    $menu_item->update([
+                        'name' => $item['name'],
+                        'order' => $key,
+                        'item_properties' => $item['item_properties']
+                    ]);
+                }
+            });
+        }
+        return response()->json(['message' => 'Menu updated successfully']);
     }
 
     public function destroy_item(string $lang, int $menu_item_id) {

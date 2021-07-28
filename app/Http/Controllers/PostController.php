@@ -15,13 +15,14 @@ use App\Helpers\Media\featuredImage;
 class PostController extends Controller
 {
     public function all_lang_posts(Request $request) {
-        $posts_per_page = $request->posts_per_page;
-        $posts = PostRelation::with('all_lang_posts')->paginate($posts_per_page);
+        $per_page = $request->per_page;
+        $posts = PostRelation::with('all_lang_posts')->paginate($per_page);
         return response()->json($posts);
     }
 
     public function index(Request $request, string $lang) {
-        $posts_per_page = $request->posts_per_page;
+        $per_page = $request->per_page;
+        $search = $request->search;
         $posts = PostRelation::with
         ([
             'post' => function ($query) use ($lang) {
@@ -38,10 +39,10 @@ class PostController extends Controller
             }
         ])
             ->whereHas(
-            'post' , function ($query) use ($lang) {
-            return $query->where('lang', $lang);
+            'post' , function ($query) use ($lang,$search) {
+            return $query->where('lang', $lang)->where('title', 'like', '%' . $search .'%');
         })
-            ->paginate($posts_per_page);
+            ->paginate($per_page);
 
         return response()->json($posts);
     }
@@ -192,8 +193,8 @@ class PostController extends Controller
     }
 
     public function trash(Request $request,string $lang) {
-        $posts_per_page = $request->posts_per_page;
-        $posts = Post::onlyTrashed()->where('lang', $lang)->paginate($posts_per_page);
+        $per_page = $request->posts_per_page;
+        $posts = Post::onlyTrashed()->where('lang', $lang)->paginate($per_page);
         return response()->json($posts);
     }
 

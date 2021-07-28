@@ -13,7 +13,7 @@ class ClientPageController extends Controller
     {
         $per_page = $request->per_page;
         $pages = Page::with('featured_image', 'status', 'author')->where(['lang' => $lang, 'status_id' => Status::STATUS_PUBLISH])->paginate($per_page);
-        return $pages;
+        return response()->json($pages);
     }
 
     public function show(string $lang, int $main_page_id){
