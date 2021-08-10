@@ -20,7 +20,4 @@ class Media extends Model
         'type',
     ];
 
-    public function properties() {
-
-    }
 }

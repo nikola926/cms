@@ -39,7 +39,7 @@ class CategoryController extends Controller
 
     public function store(Request $request, string $lang,int $main_category_id = null) {
         $request->validate([
-            'name' => 'required|unique:categories|max:255',
+            'name' => 'required|max:255',
             'lang' => 'required|unique:categories,lang,NULL,id,main_category_id,' . $main_category_id
         ]);
         if(!isset($main_category_id)){
@@ -50,6 +50,7 @@ class CategoryController extends Controller
         $lang = $request->lang;
         $name = $request->name;
         $slug = Str::slug($name);
+        $description = $request->description;
 
         $parent = $request->parent_id;
 
@@ -65,7 +66,8 @@ class CategoryController extends Controller
             'lang' => $lang,
             'name' => $name,
             'parent_id' => $parent_id,
-            'slug' => $slug,
+            'slug' => $slug. '-' .$lang,
+            'description' => $description,
 
         ]);
 
@@ -84,10 +86,12 @@ class CategoryController extends Controller
 
         $name = $request->name;
         $slug = Str::slug($name);
+        $description = $request->description;
 
         $category = Category::findOrFail($category_id)->update([
             'name' => $name,
             'slug' => $slug,
+            'description' => $description,
 
         ]);
 

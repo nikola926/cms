@@ -29,6 +29,7 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout'])->middleware('role:administrator');
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('role:administrator');
     Route::get('profile', [AuthController::class, 'profile'])->middleware('role:administrator');
+    Route::delete('user/delete/{user_id}', [AuthController::class, 'delete'])->middleware('role:administrator');
 });
 
 //------------CATEGORY ROUTE------------
@@ -105,6 +106,9 @@ Route::get('client/{lang}/pages', [ClientPageController::class, 'index']);
 
 //--------MEDIA ROUTE---------------
 
+Route::get('media/images', [MediaController::class, 'images'])->middleware('role:administrator');
+Route::get('media/documents', [MediaController::class, 'documents'])->middleware('role:administrator');
+Route::get('media/audio', [MediaController::class, 'audio'])->middleware('role:administrator');
 Route::resource('media', MediaController::class)->middleware('role:administrator');
 
 Route::get('/all_langs', function () {

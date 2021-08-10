@@ -6,6 +6,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -68,6 +69,16 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'User created successfully']);
 
+    }
+
+    public function delete(int $user_id) {
+        $role = DB::table('users_roles')->where('user_id', $user_id)->delete();
+        $user = User::where('id', $user_id)->delete();
+
+        if($role || $user){
+            return response()->json(['message' => 'User deleted successfully']);
+        }
+        return response()->json(['message' => 'Something went wrong', $user, $role]);
     }
 
 

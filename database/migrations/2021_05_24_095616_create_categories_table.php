@@ -18,6 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->foreignId('main_category_id')->nullable()->constrained('category_relations');
             $table->string('lang');
             $table->unsignedBigInteger('parent_id')->nullable();
+            $table->text('description')->nullable();
             $table->string('name');
             $table->string('slug')->unique();
             $table->timestamps();

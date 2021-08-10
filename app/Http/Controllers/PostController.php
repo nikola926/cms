@@ -193,7 +193,7 @@ class PostController extends Controller
     }
 
     public function trash(Request $request,string $lang) {
-        $per_page = $request->posts_per_page;
+        $per_page = $request->per_page;
         $posts = Post::onlyTrashed()->where('lang', $lang)->paginate($per_page);
         return response()->json($posts);
     }

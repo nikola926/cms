@@ -60,11 +60,13 @@ class PageController extends Controller
         $slug = Str::of($title)->slug('-');
         $get_content = $request->page_content;
         $featured_image = $request->file('featured_image');
+        $featured_image_id = $request->featured_image_id;
         $status_id = $request->status_id;
 
         if($featured_image){
             $image_id = FeaturedImage::uploadFeaturedImage($featured_image);
-
+        }elseif($featured_image_id){
+            $image_id = $featured_image_id;
         } else{
             $image_id = null;
         }
@@ -152,12 +154,12 @@ class PageController extends Controller
     }
 
     public function restore(string $lang, $page_id){
-        Page::findOrFail($page_id)->withTrashed()->restore();
+        Page::withTrashed()->findOrFail($page_id)->restore();
         return response()->json(['page_id' => $page_id , 'message' => 'Page restored successfully']);
     }
 
     public function delete(string $lang, $page_id) {
-        Page::findOrFail($page_id)->withTrashed()->forceDelete();
+        Page::withTrashed()->findOrFail($page_id)->forceDelete();
         return response()->json(['page_id' => $page_id , 'message' => 'Page deleted successfully']);
     }
 
